@@ -98,7 +98,7 @@ Node *removeNNodes(int value, Node *node, int nOfEqualNodes){
             aux->left = node->left;
             aux->right = node->right;
         }
-        printf("Removeu");
+        printf("\nRemoveu");
         free(node);
         return aux;
     }
@@ -185,7 +185,7 @@ int main() {
     printPostOrder(root);
     printf("\nPré ordem: ");
     printPreOrder(root);
-    root = removeNode(2, root);
+    root = removeNode(5, root);
     printf("\nEm ordem: ");
     printInOrder(root);
 
