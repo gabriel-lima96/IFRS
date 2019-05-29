@@ -69,10 +69,10 @@ Node *insert(int value, Node *node){
 Node *removeNNodes(int value, Node *node, int nOfEqualNodes){
     if(node == NULL) { return NULL; }
     if(node->value > value) {
-        node->left = removeNValues(value, node->left, nOfEqualNodes);
+        node->left = removeNNodes(value, node->left, nOfEqualNodes);
     }
     else if(node->value < value) {
-        node->right = removeNValues(value, node->right, nOfEqualNodes);
+        node->right = removeNNodes(value, node->right, nOfEqualNodes);
     }
     else {
         //Se achou um valor igual
@@ -89,6 +89,7 @@ Node *removeNNodes(int value, Node *node, int nOfEqualNodes){
         }
         else {
             aux = node->right;
+            preAux = aux;
             while(aux->left != NULL) {
                 preAux = aux;
                 aux = aux->left;
@@ -111,8 +112,8 @@ Node *removeNNodes(int value, Node *node, int nOfEqualNodes){
  * @param node
  * @return
  */
-void removeNode(int value, Node *node){
-    removeNNodes(value, node, 1);
+Node *removeNode(int value, Node *node){
+    return removeNNodes(value, node, 1);
 }
 
 /**
@@ -184,6 +185,7 @@ int main() {
     printPostOrder(root);
     printf("\nPré ordem: ");
     printPreOrder(root);
+    root = removeNode(2, root);
     printf("\nEm ordem: ");
     printInOrder(root);
 
