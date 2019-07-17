@@ -99,6 +99,7 @@ int loadGraph(char* filename){
  */
 void _imprimirMatrizes(int n_nodes) {
     int i, j;
+    printf("\nMatriz de adjecencia:");
     for(i=0; i<n_nodes; i++){
         printf("\n");
         for(j=0; j<n_nodes; j++){
@@ -108,6 +109,7 @@ void _imprimirMatrizes(int n_nodes) {
 
     printf("\n");
 
+    printf("\nMatriz de custo:");
     for(i=0; i<n_nodes; i++) {
         printf("\n");
         for (j = 0; j < n_nodes; j++) {
@@ -157,25 +159,104 @@ void custo_minimo(int n_nodes, int start, int goal){
 * Saída:
 *	O caminho no grafo, do "start" até o "goal", segundo o algoritmo de Dijkstra
 */
-void dijkstra(int n_nodes, int start, int goal){}
+void dijkstra(int n_nodes, int start, int goal) {
+    if (n_nodes < 1) { return; }
+    if (n_nodes == 1 || start == goal) {
+        printf("%d", start);
+        return;
+    }
+    /* Inicialização das variáveis */
+    int menorCusto[n_nodes];        /// @var int[] menorCusto Array que armazena o menor custo para cada nodo
+    int precedentes[n_nodes];       /// @var int[] precedentes Array que armazena o o nodo anterior de acordo com o menor custo
+    int visitados[n_nodes];         /// @var int[] visitados Array que armazena um boolean (0 ou 1) indicando se o novo já foi visitado
+    // Inicializa as informações referentes ao primeiro nodo
+    menorCusto[0] = 0;
+    precedentes[0] = 0;
+    visitados[0] = 0;
+    for (int i = 1; i < n_nodes; i++) {
+        // Inicializa custos, precedentes e se foi visitado nos outros nodos
+        menorCusto[i] = INFINITE;
+        precedentes[i] = -1;
+        visitados[i] = 0;
+    }
+
+    int pivo = 0;
+    int menor;
+    while (precedentes[0] == 0) {
+        menor = -1;
+        visitados[pivo] = 1;
+        // Procura todos nodos adjecentes e calcula os custos
+        for (int i = 0; i < n_nodes; i++) {
+            // Se não é um nodo adjecente ou se foi visitado, vai pro próximo
+            if (!adj[pivo][i]) { continue; }
+            // Se o resultado do calculo de menor custo entre esse precedente for menor que o menor custo encontrado
+            // até então para o nodo 'i', substitui no 'menorCusto' e no 'precedentes'
+            if (cost[pivo][i] + menorCusto[pivo] < menorCusto[i]) {
+                menorCusto[i] = cost[pivo][i] + menorCusto[pivo];
+                precedentes[i] = pivo;
+            }
+            //  Verifica se esse é o próximo nodo que deve ser visitado
+            if (menorCusto[i] > menor && !visitados[i]) {
+                menor = i;
+            }
+        }
+        // Se verificou todos nodos adjecentes
+        if (menor == -1) {
+            if (pivo == precedentes[pivo]) {
+                // Percorreu o grafo inteiro e voltou ao start
+                break;
+            }
+            // Volta para o nodo anterior
+            pivo = precedentes[pivo];
+        }
+            // Se ainda há um nodo que ainda não foi explorado
+        else {
+            pivo = menor;
+        }
+    }
+
+    // Imprime o caminho:
+    if (precedentes[goal] == -1) {
+        printf("Não encontrou o destino\n");
+        return;
+    }
+    pivo = goal;
+    int caminho[n_nodes];
+    int count = 0;
+    // Monta o array com os caminhos
+    while (precedentes[pivo] != pivo) {
+        caminho[count++] = pivo;
+        pivo = precedentes[pivo];
+    }
+    caminho[count] = precedentes[pivo];
+    // E, finalmente, imprime os caminhos
+    for (int i = count; i > 0; i--) {
+        printf("%d -> ", caminho[i]);
+    }
+    printf("%d", caminho[0]);
+    fflush(stdout); // Só pra garantir
+}
 
 // Função main
 int main(int argc, char** args){
     // Obtém grafo do arquivo "grafo.txt", já calculando as matrizes
-    int n_nodes = loadGraph("grafo.txt");
+    int n_nodes = loadGraph("grafo3.txt");
 
-    /* ----- Imprimir aqui a matriz de adjacências ----- */
-
-    /* ----- Imprimir aqui a matriz de custo ----- */
+    _imprimirMatrizes(n_nodes);
+    printf("\n");
 
     // Busca no grafo inicia no nodo 0, com objetivo de chegar no nodo 3
-    int start=0, goal=3;
+    int start = 0, goal = 3; //grafo.txt
+    //int start = 0, goal=3; //grafo2.txt
+
+    printf("\nCusto mínimo: \n");
     custo_minimo(n_nodes, start, goal);
 
-    // Chamar aqui a procedimento que obtém/imprime o caminho pelo algoritmo GBFS
-
-    // Chamar aqui o procedimento que obtém/imprime o caminho pelo algoritmo de Dijkstra
+    printf("\n");
+    printf("\nDijkstra: \n");
+    dijkstra(n_nodes, start, goal);
 
     // Fim! Boas férias!
+    // Valeu fessor!
     return 0;
 }
